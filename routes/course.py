@@ -20,7 +20,7 @@ def get_all_course(db: Session = Depends(database.get_db)):
 
 @router.get("/courses/{course_id}", response_model = schemas.Course)
 # Mendapatkan daftar seluruh mata kuliah
-def get_all_course(course_id, db: Session = Depends(database.get_db)):
+def get_course(course_id, db: Session = Depends(database.get_db)):
     db_course = db.query(models.Course).filter(models.Course.id == course_id).first()
     return db_course
 
@@ -43,9 +43,9 @@ def get_course_schedule(course_id, db: Session = Depends(database.get_db)):
 
 # BELOM
 # @router.get("/course/schedule/{day}", response_model = List[schemas.CourseScheduleView])
-@router.get("/course/schedule/{day}")
-# Mendapatkan jadwal kuliah berdasarkan hari
-def get_course_by_day(day, db: Session = Depends(database.get_db)):
+# @router.get("/course/schedule/{day}")
+## Mendapatkan jadwal kuliah berdasarkan hari
+# def get_course_by_day(day, db: Session = Depends(database.get_db)):
     # db_course = db.query(models.CourseSchedule).join(models.Schedule, models.CourseSchedule.schedule_id == models.Schedule.id).all()
     # if db_course is None :
     #     raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "Course didn't exist")
@@ -67,13 +67,11 @@ def get_course_by_day(day, db: Session = Depends(database.get_db)):
     #     raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "Course didn't exist")
     
     # return db_course
-
-    return db.query(models.CourseSchedule.course_id, models.CourseSchedule.name, models.Schedule.day, models.Schedule.time).join(models.Schedule).all()
-
+    pass
     
 
 # BELOM
-@router.get("/course/schedule/{day}/{time}", response_model = List[schemas.CourseScheduleView])
-# Mendapatkan jadwal kuliah berdasarkan hari dan jamnya
-def get_course_by_session(day, time, db: Session = Depends(database.get_db)):
-    pass
+# @router.get("/course/schedule/{day}/{time}", response_model = List[schemas.CourseScheduleView])
+## Mendapatkan jadwal kuliah berdasarkan hari dan jamnya
+# def get_course_by_session(day, time, db: Session = Depends(database.get_db)):
+#     pass
