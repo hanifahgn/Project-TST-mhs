@@ -5,6 +5,7 @@ from models import models
 from database import database
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+from authentication import OAuth2
 
 router = APIRouter(
     tags = ["Course"]
@@ -13,28 +14,28 @@ router = APIRouter(
 
 @router.get("/courses", response_model = List[schemas.Course])
 # Mendapatkan daftar seluruh mata kuliah
-def get_all_course(db: Session = Depends(database.get_db)):
+def get_all_course(db: Session = Depends(database.get_db), current_user: schemas.User = Depends(OAuth2.get_current_user)):
     db_course = db.query(models.Course).all()
     return db_course
 
 
 @router.get("/courses/{course_id}", response_model = schemas.Course)
 # Mendapatkan daftar seluruh mata kuliah
-def get_course(course_id, db: Session = Depends(database.get_db)):
+def get_course(course_id, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(OAuth2.get_current_user)):
     db_course = db.query(models.Course).filter(models.Course.id == course_id).first()
     return db_course
 
 
 @router.get("/course/schedule", response_model = List[schemas.CourseScheduleView])
 # Mendapatkan daftar seluruh mata kuliah dengan jadwalnya
-def get_all_course_schedule(db: Session = Depends(database.get_db)):
+def get_all_course_schedule(db: Session = Depends(database.get_db), current_user: schemas.User = Depends(OAuth2.get_current_user)):
     db_course = db.query(models.CourseSchedule.course_id, models.CourseSchedule.name, models.Schedule.day, models.Schedule.time).join(models.Schedule).order_by(models.CourseSchedule.course_id).all()
     return db_course
 
 
 @router.get("/course/schedule/{course_id}", response_model = List[schemas.CourseScheduleView])
 # Mendapatkan daftar mata kuliah dengan jadwalnya
-def get_course_schedule(course_id, db: Session = Depends(database.get_db)):
+def get_course_schedule(course_id, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(OAuth2.get_current_user)):
     db_course = db.query(models.CourseSchedule.course_id, models.CourseSchedule.name, models.Schedule.day, models.Schedule.time).join(models.Schedule).filter(models.CourseSchedule.course_id == course_id).all()
     if not db_course :
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "Course didn't exist")

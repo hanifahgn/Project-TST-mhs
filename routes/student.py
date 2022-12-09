@@ -5,6 +5,7 @@ from models import models
 from database import database
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+from authentication import OAuth2
 
 router = APIRouter(
     tags = ["Student"]
@@ -12,14 +13,14 @@ router = APIRouter(
 
 @router.get("/students", response_model=List[schemas.Student])
 # Mendapatkan data semua mahasiswa
-def get_all_student(db: Session = Depends(database.get_db)):
+def get_all_student(db: Session = Depends(database.get_db), current_user: schemas.User = Depends(OAuth2.get_current_user)):
     db_student = db.query(models.Student).all()
     return db_student
 
 
 @router.get("/student/{student_id}", response_model = schemas.Student)
 # Mendapatkan data mahasiswa dengan NIM = student_id
-def get_student(student_id, db: Session = Depends(database.get_db)):
+def get_student(student_id, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(OAuth2.get_current_user)):
     db_student = db.query(models.Student).filter(models.Student.id == student_id).first()
     if db_student is None :
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "Student doesn't exist")
@@ -30,11 +31,9 @@ def get_student(student_id, db: Session = Depends(database.get_db)):
 # @router.get("/participant/day/all")
 @router.get("/participant/day/all", response_model = List[schemas.ParticipantDay])
 # Mendapatkan data jumlah mahasiswa yang memiliki kelas setiap harinya
-def get_all_participants(db: Session = Depends(database.get_db)):
+def get_all_participants(db: Session = Depends(database.get_db), current_user: schemas.User = Depends(OAuth2.get_current_user)):
     result = []
-    # for i in range (0, 15, 3):
-    #     db_participant = db.query(models.CourseTaken).join(models.CourseSchedule, models.CourseTaken.courseschedule_id == models.CourseSchedule.id).filter(models.CourseSchedule.schedule_id > 3, models.CourseSchedule.schedule_id <= 6).all()
-
+    
     day_list = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']
     for day in day_list:
         idx = day_list.index(day) * 3
@@ -53,7 +52,7 @@ def get_all_participants(db: Session = Depends(database.get_db)):
 
 @router.get("/participant/day={day}", response_model = schemas.ParticipantDay)
 # Mendapatkan jumlah mahasiswa yang memiliki jadwal kuliah pada hari = day
-def get_participants_by_day(day: str, db: Session = Depends(database.get_db)):
+def get_participants_by_day(day: str, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(OAuth2.get_current_user)):
     day_list = ['senin', 'selasa', 'rabu', 'kamis', 'jumat']
 
     try:
@@ -73,7 +72,7 @@ def get_participants_by_day(day: str, db: Session = Depends(database.get_db)):
     
 # @router.get("participant/day/time/all", response_model = List[schemas.ParticipantDayTime])
 @router.get("/participant/day/time/all")
-def get_all_participant(db: Session = Depends(database.get_db)):
+def get_all_participant(db: Session = Depends(database.get_db), current_user: schemas.User = Depends(OAuth2.get_current_user)):
     result = []
     query = select([models.Schedule.day, models.Schedule.time])
     db_sched = database.engine.execute(query).all()
@@ -93,7 +92,7 @@ def get_all_participant(db: Session = Depends(database.get_db)):
 
 @router.get("/participant/day={day}/time={time}", response_model = schemas.ParticipantDayTime)
 # Mendapatkan jumlah mahasiswa yang memiliki jadwal kuliah pada hari = day dan sesi = time
-def get_participants_by_session(day: str, time: str, db: Session = Depends(database.get_db)):
+def get_participants_by_session(day: str, time: str, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(OAuth2.get_current_user)):
     day_list = ['senin', 'selasa', 'rabu', 'kamis', 'jumat']
     session_list = ['pagi', 'siang', 'sore']
     try:
