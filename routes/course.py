@@ -67,7 +67,6 @@ def get_course_schedule(course_id, db: Session = Depends(database.get_db)):
     #     raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = "Course didn't exist")
     
     # return db_course
-    pass
     
 
 # BELOM
