@@ -2,10 +2,10 @@ __pychache__
 
 myenv
 
-database/__pychache__
+database/__pychache__/
 
-models/__pychache__
+models/__pychache__/
 
-routes/__pychache__
+routes/__pychache__/
 
-schemas/__pychache__
+schemas/__pychache__/
